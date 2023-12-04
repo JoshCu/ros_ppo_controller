@@ -12,8 +12,16 @@ model = "/home/josh/f1tenth_reinforcement_learning/work/best_models/best_model.z
 model = PPO.load(path=model)
 #https://f1tenth-gym.readthedocs.io/en/latest/customized_usage.html#custom-usage
 #https://f1tenth-gym.readthedocs.io/en/latest/api/dynamic_models.html#f110_gym.envs.dynamic_models
-MAX_SPEED = 3.0 # fwmax = 20 max backwards is 5.0
+v_max = 20.0
+v_min = -5.0
+speed_reduction = 0.25
+MAX_SPEED = v_max * speed_reduction
+MAX_REVERSE_SPEED = v_min * speed_reduction
+
 MAX_TURN = 3.2 # max turn is -3.2 to 3.2
+
+def unnormalize_linear_velocity(action):
+    return action * (MAX_SPEED + abs(MAX_REVERSE_SPEED)) + MAX_REVERSE_SPEED
 
 class ppo_controller(Node):
     def __init__(self):
@@ -83,10 +91,7 @@ class ppo_controller(Node):
         self.get_logger().info(f"Action: {action}")
 
         turn = action[0] * MAX_TURN
-        velocity = action[1] * MAX_SPEED
-        if action[1] == 0 and self.velocity > 0:
-            velocity = -1 * MAX_SPEED
-            
+        velocity = unnormalize_linear_velocity(action[1])         
         self.cmd.linear.x = velocity
         self.cmd.angular.z = turn
         self.publisher_.publish(self.cmd)
