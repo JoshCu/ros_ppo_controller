@@ -1,3 +1,6 @@
+## Note to anyone using this
+The model saved in this repo was trained incorrectly, I don't remember the specifics but the forward speed max of the car was mixed up with the turning speed max resulting in the car never being able to move forwards faster than 3m/s. This is probably why it swerves all over the place as the reward function was scaled with velocity which is highest when the car is turning at max speed.
+
 # ROS PPO Controller
 
 This project, `ros_ppo_controller`, is a Python package that uses the Proximal Policy Optimization (PPO) algorithm to control a robot in a ROS (Robot Operating System) environment.
